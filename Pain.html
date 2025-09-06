@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Location Share</title>
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+</head>
+<body>
+    <h2>Share Your Location</h2>
+    <button onclick="sendLocation()">Share Location</button>
+    <p id="status"></p>
+
+    <script>
+        (function(){
+            emailjs.init("uFImK7HAqw_bb9pBP"); // yahan apna Public Key daalo
+        })();
+
+        function sendLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(locationSuccess, locationError);
+            } else {
+                document.getElementById("status").innerText = "Geolocation not supported.";
+            }
+        }
+
+        function locationSuccess(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            const templateParams = {
+                name: "User Name", // yahan dynamically bhi le sakte ho
+                latitude: lat,
+                longitude: lon,
+                message: "User has shared location."
+            };
+
+            emailjs.send('service_llove', 'template_7by6il6', templateParams)
+                .then(function(response) {
+                    document.getElementById("status").innerText = "Location sent successfully!";
+                    console.log("SUCCESS!", response.status, response.text);
+                }, function(error) {
+                    document.getElementById("status").innerText = "Failed to send location.";
+                    console.log("FAILED...", error);
+                });
+        }
+
+        function locationError(error) {
+            document.getElementById("status").innerText = "Permission denied or error occurred.";
+        }
+    </script>
+</body>
+</html>
